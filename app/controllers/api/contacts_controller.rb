@@ -1,11 +1,17 @@
 class Api::ContactsController < ApplicationController
 
-  def index
+ def index
     @contacts = Contact.all
+    if params[:search]
+      @contacts = @contacts.where("first_name iLIKE ? OR last_name iLIKE ? OR middle_name iLIKE ? OR email iLIKE ? OR bio iLIKE ?", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%")
+    end
+
+    @contacts = @contacts.order(:id)
     render 'index.json.jb'
   end
 
   def create
+    coordinates = Geocoder.coordinates(params[:address])
     @contact = Contact.new(
       first_name: params[:first_name],
       middle_name: params[:middle_name],
@@ -14,10 +20,15 @@ class Api::ContactsController < ApplicationController
       phone_number: params[:phone_number],
       latitude: params[:latitude],
       longitude: params[:longitude],
-      bio: params[:bio]
+      bio: params[:bio], 
+      latitude: coordinates[0],
+      longitude: coordinates[1]
     )
-    @contact.save
-    render 'show.json.jb'
+    if @contact.save
+      render 'show.json.jb'
+    else
+      render json: {errors: @contact.errors.full_messages}, status: :unprocessable_entity
+    end
   end
 
   def show
@@ -27,6 +38,7 @@ class Api::ContactsController < ApplicationController
 
   def update
     @contact = Contact.find(params[:id])
+    coordinates = Geocoder.coordinates(params[:address])
     
     @contact.first_name = params[:first_name] || @contact.first_name
     @contact.middle_name = params[:middle_name] ||@contacts.middle_name
@@ -37,8 +49,11 @@ class Api::ContactsController < ApplicationController
     @contact.longitude = params[:longitude] || @contact.longitude
     @contact.bio = params[:bio] || @contact.bio
 
-    @contact.save
-    render 'show.json.jb'
+    if @contact.save
+      render 'show.json.jb'
+    else
+      render json: {errors: @contact.errors.full_messages}, status: :unprocessable_entity
+    end
   end
 
   def destroy
