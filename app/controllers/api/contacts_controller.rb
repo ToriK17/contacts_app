@@ -5,7 +5,7 @@ class Api::ContactsController < ApplicationController
     if params[:search]
       @contacts = @contacts.where("first_name iLIKE ? OR last_name iLIKE ? OR middle_name iLIKE ? OR email iLIKE ? OR bio iLIKE ?", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%", "%#{params[:search]}%")
     end
-
+ 
     @contacts = @contacts.order(:id)
     render 'index.json.jb'
   end
@@ -41,13 +41,13 @@ class Api::ContactsController < ApplicationController
     coordinates = Geocoder.coordinates(params[:address])
     
     @contact.first_name = params[:first_name] || @contact.first_name
-    @contact.middle_name = params[:middle_name] ||@contacts.middle_name
+    @contact.middle_name = params[:middle_name] || @contact.middle_name
     @contact.last_name = params[:last_name] || @contact.last_name
     @contact.email = params[:email] || @contact.email
     @contact.phone_number = params[:phone_number] || @contact.phone_number
-    @contact.latitude = params[:latitude] || @contact.latitude
-    @contact.longitude = params[:longitude] || @contact.longitude
     @contact.bio = params[:bio] || @contact.bio
+    @contact.latitude = coordinates[0] || @contacts.latitude
+    @contact.longitude = coordinates[1] || @contacts.longitude
 
     if @contact.save
       render 'show.json.jb'

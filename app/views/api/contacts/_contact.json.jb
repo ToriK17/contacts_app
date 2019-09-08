@@ -10,6 +10,7 @@
   bio: contact.bio,
   formatted: {
     updated_at: contact.friendly_updated_at,
-    # japan_phone_number: contact.japan_phone_number
+    japan_phone_number: contact.japan_phone_number
   }
+  
 }
