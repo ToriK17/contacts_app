@@ -22,8 +22,8 @@
 #   )
 # contact.save
 
-Group.create([
-  {name: "family"}, 
-  {name: "work"}, 
-  {name: "friends"}
-])
+# Group.create([
+#   {name: "family"}, 
+#   {name: "work"}, 
+#   {name: "friends"}
+# ])
